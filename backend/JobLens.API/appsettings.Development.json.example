@@ -1,0 +1,20 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost;Database=JobLens;Trusted_Connection=True;TrustServerCertificate=True;"
+  },
+  "Jwt": {
+    "Issuer": "JobLens",
+    "Audience": "JobLensClient",
+    "Key": "replace-with-a-long-random-secret-key"
+  },
+  "Gemini": {
+    "ApiKey": "your-gemini-api-key",
+    "Model": "gemini-1.5-flash"
+  }
+}
