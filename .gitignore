@@ -1,0 +1,71 @@
+# ---------------------------------------------------------------------------
+# JobLens root .gitignore
+# Frontend (Angular) keeps its own .gitignore under frontend/joblens-web/
+# ---------------------------------------------------------------------------
+
+# ----- .NET / ASP.NET Core -----
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+[Ll]og/
+[Ll]ogs/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+project.lock.json
+artifacts/
+[Dd]ebug/
+[Rr]elease/
+[Dd]ebugPublic/
+[Rr]eleases/
+x64/
+x86/
+*.pdb
+*.dll
+*.exe
+
+# ASP.NET Core specific — local dev config holds secrets, keep the .example only
+appsettings.Development.json
+appsettings.*.local.json
+*.mdf
+*.ldf
+*.ndf
+
+# ----- EF Core / SQL Server -----
+*.dbmdl
+*.dbproj.schemaview
+LocalDB/
+
+# ----- Secrets / environment -----
+.env
+.env.*
+!.env.example
+secrets.json
+*.pfx
+*.key
+
+# ----- Node / general (safety net; frontend has its own too) -----
+node_modules/
+npm-debug.log*
+yarn-error.log*
+dist/
+.angular/cache/
+
+# ----- IDE / editor -----
+.idea/
+*.swp
+*.swo
+*~
+
+# ----- OS -----
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# ----- Coverage / test output -----
+coverage/
+TestResults/
+*.trx
