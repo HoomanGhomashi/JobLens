@@ -1,0 +1,30 @@
+# Normalize line endings on checkin, auto-detect on checkout
+* text=auto
+
+# Force LF for cross-platform source
+*.cs        text eol=lf
+*.ts        text eol=lf
+*.js        text eol=lf
+*.json      text eol=lf
+*.html      text eol=lf
+*.css       text eol=lf
+*.scss      text eol=lf
+*.md        text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+*.sln       text eol=crlf
+
+# Windows-specific scripts
+*.cmd       text eol=crlf
+*.bat       text eol=crlf
+*.ps1       text eol=crlf
+
+# Binary assets
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.gif       binary
+*.ico       binary
+*.woff      binary
+*.woff2     binary
+*.pdf       binary
