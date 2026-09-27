@@ -1,47 +1,49 @@
 <div class="max-w-6xl mx-auto space-y-8">
-  <div>
-    <h1 class="text-2xl font-semibold text-slate-900">Overview</h1>
-    <p class="mt-1 text-sm text-slate-500">Vue d'ensemble des données réelles du research engine.</p>
-  </div>
+  <app-page-header
+    title="Research Overview"
+    description="Monitor your job research pipeline and opportunities."
+    [showRefresh]="true"
+    (refresh)="refresh()"
+  />
 
   @if (loading()) {
-    <div class="animate-pulse grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      @for (i of [1, 2, 3, 4]; track i) {
-        <div class="h-28 rounded-xl bg-slate-200"></div>
-      }
-    </div>
-  } @else if (error()) {
-    <div class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-      {{ error() }}
-    </div>
-  } @else if (data(); as d) {
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <p class="text-sm text-slate-500">Companies</p>
-        <p class="mt-2 text-3xl font-semibold text-slate-900">{{ d.companiesCount }}</p>
-      </div>
-      <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <p class="text-sm text-slate-500">Jobs</p>
-        <p class="mt-2 text-3xl font-semibold text-slate-900">{{ d.jobsCount }}</p>
-      </div>
-      <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <p class="text-sm text-slate-500">Active Opportunities</p>
-        <p class="mt-2 text-3xl font-semibold text-emerald-600">{{ d.activeOpportunitiesCount }}</p>
-      </div>
-      <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <p class="text-sm text-slate-500">Search History</p>
-        <p class="mt-2 text-3xl font-semibold text-slate-900">{{ d.searchHistoryCount }}</p>
-      </div>
-    </div>
-
-    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-      <div class="flex flex-wrap items-center justify-between gap-2">
-        <h2 class="text-sm font-medium text-slate-500">Dernière activité de recherche</h2>
-        @if (d.lastCoverageState) {
-          <span [class]="coverageBadgeClass(d.lastCoverageState)">{{ d.lastCoverageState }}</span>
+    <div class="animate-pulse space-y-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        @for (i of [1, 2, 3, 4]; track i) {
+          <div class="h-32 rounded-2xl bg-surface"></div>
         }
       </div>
-      <p class="mt-2 text-lg text-slate-900">
+      <div class="h-24 rounded-2xl bg-surface"></div>
+      <div class="h-64 rounded-2xl bg-surface"></div>
+    </div>
+  } @else if (error()) {
+    <app-empty-error-state kind="error" title="Chargement impossible" [description]="error()!" />
+  } @else if (data(); as d) {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      @for (m of metrics(d); track m.label) {
+        <div class="group relative overflow-hidden rounded-2xl border border-border bg-surface p-5 transition-colors hover:bg-surface-hover">
+          <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-xl" [class]="m.iconClass">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="m.icon" />
+            </svg>
+          </div>
+          <p class="text-3xl font-semibold" [class]="m.valueClass">{{ m.value }}</p>
+          <p class="mt-1 text-sm font-medium text-fg">{{ m.label }}</p>
+          <p class="mt-0.5 text-xs text-fg-muted">{{ m.description }}</p>
+        </div>
+      }
+    </div>
+
+    <div class="rounded-2xl border border-border bg-surface p-5">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <h2 class="text-sm font-medium text-fg-muted">Dernière activité de recherche</h2>
+        @if (d.lastCoverageState) {
+          <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset bg-emerald-500/10 text-emerald-400 ring-emerald-500/20">
+            {{ d.lastCoverageState }}
+          </span>
+        }
+      </div>
+      <p class="mt-2 text-lg text-fg">
         @if (d.lastSearchAt) {
           {{ d.lastSearchAt | date: 'medium' }}
         } @else {
@@ -50,32 +52,74 @@
       </p>
     </div>
 
-    <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
-      <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-        <h2 class="text-sm font-medium text-slate-700">Dernières offres découvertes</h2>
-        <a routerLink="/jobs" class="text-sm text-indigo-600 hover:underline">Voir tout →</a>
+    <div>
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-lg font-semibold text-fg">Recent Opportunities</h2>
+        <a routerLink="/jobs" class="text-sm font-medium text-brand-400 hover:text-brand-300 hover:underline">
+          View all jobs →
+        </a>
       </div>
+
       @if (d.recentJobs.length === 0) {
-        <p class="px-5 py-8 text-center text-sm text-slate-400">Aucune offre pour le moment.</p>
+        <app-empty-error-state title="Aucune offre pour le moment" description="Lancez une recherche pour peupler cette section." />
       } @else {
-        <ul class="divide-y divide-slate-100">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           @for (job of d.recentJobs; track job.id) {
-            <li class="flex flex-wrap items-center justify-between gap-2 px-5 py-3">
-              <div>
-                <p class="font-medium text-slate-900">{{ job.title }}</p>
-                <p class="text-sm text-slate-500">{{ job.city }} · {{ job.country }}</p>
-              </div>
-              <div class="flex items-center gap-2">
-                @if (job.contractType) {
-                  <span [class]="contractBadgeClass(job.contractType)">{{ job.contractType }}</span>
-                }
+            <div class="flex flex-col rounded-2xl border border-border bg-surface p-5 transition-colors hover:bg-surface-hover">
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  <span
+                    class="h-2 w-2 rounded-full"
+                    [class]="job.isActiveOpportunity ? 'bg-brand-500' : 'bg-zinc-600'"
+                    aria-hidden="true"
+                  ></span>
+                  <h3 class="font-semibold text-fg">{{ job.title }}</h3>
+                </div>
                 <span [class]="activeOpportunityBadgeClass(job.isActiveOpportunity)">
                   {{ job.isActiveOpportunity ? 'Active' : 'Inactive' }}
                 </span>
               </div>
-            </li>
+
+              @if (job.companyName) {
+                <p class="mt-2 text-sm font-medium text-zinc-300">{{ job.companyName }}</p>
+              }
+              <p class="text-sm text-fg-muted">
+                {{ job.city ?? '—' }}, {{ job.country }}
+                @if (job.contractType) {
+                  · <span [class]="contractBadgeClass(job.contractType)">{{ job.contractType }}</span>
+                }
+              </p>
+
+              <div class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-500">
+                @if (job.publishedAtRaw) {
+                  <span>Published {{ job.publishedAtRaw }}</span>
+                } @else if (job.publishedAt) {
+                  <span>Published {{ job.publishedAt | date: 'dd/MM/yyyy' }}</span>
+                }
+                @if (job.experienceMinYears || job.experienceMaxYears) {
+                  <span>Experience: {{ job.experienceMinYears ?? '?' }}–{{ job.experienceMaxYears ?? '?' }} years</span>
+                }
+              </div>
+
+              <div class="mt-4 pt-3 border-t border-border flex justify-end">
+                @if (job.sources[0]?.sourceUrl; as url) {
+                  <a
+                    [href]="url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-sm font-medium text-brand-400 hover:text-brand-300 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded"
+                  >
+                    View opportunity →
+                  </a>
+                } @else {
+                  <a routerLink="/jobs" class="text-sm font-medium text-zinc-500 hover:text-zinc-300">
+                    View details →
+                  </a>
+                }
+              </div>
+            </div>
           }
-        </ul>
+        </div>
       }
     </div>
   }

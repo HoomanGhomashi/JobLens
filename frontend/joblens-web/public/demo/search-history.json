@@ -1,0 +1,255 @@
+[
+  {
+    "id": 1,
+    "geography": "Nantes, 44",
+    "city": "Nantes",
+    "department": "44",
+    "searchType": "FULL_DISCOVERY",
+    "queriesUsed": [
+      "développeur react Nantes",
+      "devops Nantes",
+      "ingénieur backend Nantes",
+      "architecte logiciel Nantes"
+    ],
+    "sourcesChecked": [
+      "france_travail",
+      "indeed",
+      "wttj"
+    ],
+    "apifyRunId": "0gbqklk55lgt",
+    "companiesFound": 3,
+    "newCompanies": 2,
+    "duplicatesFound": 1,
+    "jobsFound": 1,
+    "newJobs": 0,
+    "coverageState": "COMPLETE",
+    "notes": null,
+    "searchedAt": "2026-09-26T10:00:00.000Z"
+  },
+  {
+    "id": 2,
+    "geography": "Rennes, 35",
+    "city": "Rennes",
+    "department": "35",
+    "searchType": "FULL_DISCOVERY",
+    "queriesUsed": [
+      "développeur .NET Rennes",
+      "devops Rennes"
+    ],
+    "sourcesChecked": [
+      "linkedin",
+      "indeed",
+      "france_travail"
+    ],
+    "apifyRunId": "ib9xqoh2ux",
+    "companiesFound": 7,
+    "newCompanies": 3,
+    "duplicatesFound": 1,
+    "jobsFound": 6,
+    "newJobs": 2,
+    "coverageState": "COMPLETE",
+    "notes": null,
+    "searchedAt": "2026-09-24T10:00:00.000Z"
+  },
+  {
+    "id": 3,
+    "geography": "Rennes, 35",
+    "city": "Rennes",
+    "department": "35",
+    "searchType": "MONITORING_ONLY",
+    "queriesUsed": [
+      "développeur react Rennes",
+      "data engineer Rennes",
+      "architecte logiciel Rennes"
+    ],
+    "sourcesChecked": [
+      "linkedin",
+      "indeed"
+    ],
+    "apifyRunId": "a7rucbq0tg",
+    "companiesFound": 8,
+    "newCompanies": 2,
+    "duplicatesFound": 0,
+    "jobsFound": 5,
+    "newJobs": 2,
+    "coverageState": "PARTIAL",
+    "notes": null,
+    "searchedAt": "2026-09-22T10:00:00.000Z"
+  },
+  {
+    "id": 4,
+    "geography": "Toulouse, 31",
+    "city": "Toulouse",
+    "department": "31",
+    "searchType": "FULL_DISCOVERY_REFRESH",
+    "queriesUsed": [
+      "architecte logiciel Toulouse",
+      "développeur react Toulouse",
+      "data engineer Toulouse",
+      "ingénieur backend Toulouse"
+    ],
+    "sourcesChecked": [
+      "wttj"
+    ],
+    "apifyRunId": "v6ssna4igl",
+    "companiesFound": 7,
+    "newCompanies": 0,
+    "duplicatesFound": 0,
+    "jobsFound": 5,
+    "newJobs": 0,
+    "coverageState": "FAILED",
+    "notes": "Échec technique lors de la recherche (exemple synthétique).",
+    "searchedAt": "2026-09-20T10:00:00.000Z"
+  },
+  {
+    "id": 5,
+    "geography": "Lyon, 69",
+    "city": "Lyon",
+    "department": "69",
+    "searchType": "FULL_DISCOVERY_REFRESH",
+    "queriesUsed": [
+      "architecte logiciel Lyon",
+      "développeur react Lyon",
+      "data engineer Lyon"
+    ],
+    "sourcesChecked": [
+      "indeed",
+      "company",
+      "linkedin"
+    ],
+    "apifyRunId": "v97qf0p2kvs",
+    "companiesFound": 3,
+    "newCompanies": 0,
+    "duplicatesFound": 2,
+    "jobsFound": 6,
+    "newJobs": 2,
+    "coverageState": "COMPLETE",
+    "notes": null,
+    "searchedAt": "2026-09-18T10:00:00.000Z"
+  },
+  {
+    "id": 6,
+    "geography": "Bordeaux, 33",
+    "city": "Bordeaux",
+    "department": "33",
+    "searchType": "FULL_DISCOVERY_REFRESH",
+    "queriesUsed": [
+      "data engineer Bordeaux",
+      "ingénieur backend Bordeaux",
+      "architecte logiciel Bordeaux"
+    ],
+    "sourcesChecked": [
+      "france_travail",
+      "linkedin"
+    ],
+    "apifyRunId": "1ohm84fy47g",
+    "companiesFound": 10,
+    "newCompanies": 2,
+    "duplicatesFound": 3,
+    "jobsFound": 6,
+    "newJobs": 0,
+    "coverageState": "COMPLETE",
+    "notes": null,
+    "searchedAt": "2026-09-16T10:00:00.000Z"
+  },
+  {
+    "id": 7,
+    "geography": "Bruxelles",
+    "city": "Bruxelles",
+    "department": null,
+    "searchType": "MONITORING_PLUS_NEW",
+    "queriesUsed": [
+      "ingénieur backend Bruxelles",
+      "développeur .NET Bruxelles",
+      "architecte logiciel Bruxelles",
+      "data engineer Bruxelles"
+    ],
+    "sourcesChecked": [
+      "linkedin",
+      "indeed",
+      "france_travail"
+    ],
+    "apifyRunId": "8vwxm0vgno",
+    "companiesFound": 0,
+    "newCompanies": 1,
+    "duplicatesFound": 3,
+    "jobsFound": 7,
+    "newJobs": 1,
+    "coverageState": "PARTIAL",
+    "notes": null,
+    "searchedAt": "2026-09-14T10:00:00.000Z"
+  },
+  {
+    "id": 8,
+    "geography": "Toulouse, 31",
+    "city": "Toulouse",
+    "department": "31",
+    "searchType": "MONITORING_ONLY",
+    "queriesUsed": [
+      "architecte logiciel Toulouse",
+      "ingénieur backend Toulouse"
+    ],
+    "sourcesChecked": [
+      "france_travail",
+      "wttj",
+      "indeed"
+    ],
+    "apifyRunId": "a6a3aseihst",
+    "companiesFound": 2,
+    "newCompanies": 1,
+    "duplicatesFound": 3,
+    "jobsFound": 7,
+    "newJobs": 1,
+    "coverageState": "COMPLETE",
+    "notes": null,
+    "searchedAt": "2026-09-12T10:00:00.000Z"
+  },
+  {
+    "id": 9,
+    "geography": "Bordeaux, 33",
+    "city": "Bordeaux",
+    "department": "33",
+    "searchType": "MONITORING_PLUS_NEW",
+    "queriesUsed": [
+      "data engineer Bordeaux",
+      "développeur react Bordeaux"
+    ],
+    "sourcesChecked": [
+      "linkedin",
+      "indeed"
+    ],
+    "apifyRunId": "97brr2zkdhl",
+    "companiesFound": 5,
+    "newCompanies": 3,
+    "duplicatesFound": 0,
+    "jobsFound": 5,
+    "newJobs": 2,
+    "coverageState": "PARTIAL",
+    "notes": null,
+    "searchedAt": "2026-09-10T10:00:00.000Z"
+  },
+  {
+    "id": 10,
+    "geography": "Toulouse, 31",
+    "city": "Toulouse",
+    "department": "31",
+    "searchType": "FULL_DISCOVERY",
+    "queriesUsed": [
+      "ingénieur backend Toulouse",
+      "architecte logiciel Toulouse"
+    ],
+    "sourcesChecked": [
+      "france_travail",
+      "indeed"
+    ],
+    "apifyRunId": "v9q62plxcli",
+    "companiesFound": 0,
+    "newCompanies": 2,
+    "duplicatesFound": 0,
+    "jobsFound": 6,
+    "newJobs": 1,
+    "coverageState": "COMPLETE",
+    "notes": null,
+    "searchedAt": "2026-09-08T10:00:00.000Z"
+  }
+]

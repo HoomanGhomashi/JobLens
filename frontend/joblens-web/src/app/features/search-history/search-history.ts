@@ -1,47 +1,47 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, computed, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { ResearchApiService } from '../../core/services/research-api.service';
-import { PagedResult, SearchHistoryDto } from '../../core/models/research.models';
+import { ResearchDataService } from '../../core/services/research-data.service';
+import { SearchHistoryDto } from '../../core/models/research.models';
 import { coverageBadgeClass } from '../../shared/badge-styles';
-import { Pager } from '../../shared/pager/pager';
-
-const PAGE_SIZE = 10;
+import { PageHeader } from '../../shared/page-header/page-header';
+import { EmptyErrorState } from '../../shared/empty-error-state/empty-error-state';
 
 @Component({
   selector: 'app-search-history',
-  imports: [DatePipe, Pager],
+  imports: [DatePipe, PageHeader, EmptyErrorState],
   templateUrl: './search-history.html',
 })
 export class SearchHistory implements OnInit {
-  protected readonly result = signal<PagedResult<SearchHistoryDto> | null>(null);
+  protected readonly all = signal<SearchHistoryDto[]>([]);
   protected readonly loading = signal(true);
   protected readonly error = signal<string | null>(null);
-  protected readonly page = signal(1);
-  protected readonly pageSize = PAGE_SIZE;
 
   protected readonly coverageBadgeClass = coverageBadgeClass;
 
-  constructor(private readonly api: ResearchApiService) {}
+  protected readonly sorted = computed(() =>
+    [...this.all()].sort((a, b) => new Date(b.searchedAt).getTime() - new Date(a.searchedAt).getTime()),
+  );
+
+  constructor(private readonly api: ResearchDataService) {}
 
   ngOnInit(): void {
     this.load();
   }
 
-  protected onPageChange(page: number): void {
-    this.page.set(page);
+  protected refresh(): void {
     this.load();
   }
 
   private load(): void {
     this.loading.set(true);
     this.error.set(null);
-    this.api.getSearchHistory(this.page(), this.pageSize).subscribe({
-      next: (result) => {
-        this.result.set(result);
+    this.api.getSearchHistory().subscribe({
+      next: (items) => {
+        this.all.set(items);
         this.loading.set(false);
       },
       error: () => {
-        this.error.set("Impossible de charger l'historique depuis l'API.");
+        this.error.set("Impossible de charger l'historique.");
         this.loading.set(false);
       },
     });

@@ -1,72 +1,76 @@
-<div class="max-w-6xl mx-auto space-y-6">
-  <div>
-    <h1 class="text-2xl font-semibold text-slate-900">Search History</h1>
-    <p class="mt-1 text-sm text-slate-500">research.SearchHistory — journal des runs du research engine.</p>
-  </div>
+<div class="max-w-4xl mx-auto space-y-6">
+  <app-page-header title="Research History" description="research.SearchHistory — journal des runs du research engine." [showRefresh]="true" (refresh)="refresh()" />
 
   @if (loading()) {
-    <div class="animate-pulse h-64 rounded-xl bg-slate-200"></div>
-  } @else if (error()) {
-    <div class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">{{ error() }}</div>
-  } @else if (result(); as r) {
-    <div class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-      @if (r.items.length === 0) {
-        <p class="px-5 py-10 text-center text-sm text-slate-400">Aucun run enregistré.</p>
-      } @else {
-        <ul class="divide-y divide-slate-100">
-          @for (h of r.items; track h.id) {
-            <li class="px-5 py-4">
-              <div class="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <p class="font-medium text-slate-900">{{ h.geography ?? h.city ?? '—' }} · {{ h.searchType }}</p>
-                  <p class="text-sm text-slate-500">{{ h.searchedAt | date: 'medium' }}</p>
-                </div>
-                <span [class]="coverageBadgeClass(h.coverageState)">{{ h.coverageState ?? 'UNKNOWN' }}</span>
-              </div>
-
-              <div class="mt-3 grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
-                <div>
-                  <p class="text-slate-400">Companies found</p>
-                  <p class="text-slate-700">{{ h.companiesFound }}</p>
-                </div>
-                <div>
-                  <p class="text-slate-400">New companies</p>
-                  <p class="text-slate-700">{{ h.newCompanies }}</p>
-                </div>
-                <div>
-                  <p class="text-slate-400">Duplicates</p>
-                  <p class="text-slate-700">{{ h.duplicatesFound }}</p>
-                </div>
-                <div>
-                  <p class="text-slate-400">Jobs found</p>
-                  <p class="text-slate-700">{{ h.jobsFound }}</p>
-                </div>
-                <div>
-                  <p class="text-slate-400">New jobs</p>
-                  <p class="text-slate-700">{{ h.newJobs }}</p>
-                </div>
-              </div>
-
-              @if (h.sourcesChecked.length > 0) {
-                <p class="mt-3 text-xs text-slate-400">
-                  Sources : <span class="text-slate-600">{{ h.sourcesChecked.join(', ') }}</span>
-                </p>
-              }
-              @if (h.queriesUsed.length > 0) {
-                <p class="mt-1 text-xs text-slate-400">
-                  Queries : <span class="text-slate-600">{{ h.queriesUsed.join(' · ') }}</span>
-                </p>
-              }
-              @if (h.notes) {
-                <p class="mt-2 text-xs text-red-500 whitespace-pre-line">{{ h.notes }}</p>
-              }
-            </li>
-          }
-        </ul>
+    <div class="animate-pulse space-y-4">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="h-28 rounded-2xl bg-surface"></div>
       }
     </div>
-    <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
-      <app-pager [page]="r.page" [pageSize]="r.pageSize" [totalCount]="r.totalCount" (pageChange)="onPageChange($event)" />
-    </div>
+  } @else if (error()) {
+    <app-empty-error-state kind="error" title="Chargement impossible" [description]="error()!" />
+  } @else if (sorted().length === 0) {
+    <app-empty-error-state title="Aucun run enregistré" description="Lancez une recherche pour peupler l'historique." />
+  } @else {
+    <ol class="relative border-s-2 border-brand-600/20 ml-3">
+      @for (h of sorted(); track h.id) {
+        <li class="mb-8 ms-6">
+          <span
+            class="absolute -start-[9px] flex h-4 w-4 items-center justify-center rounded-full ring-4 ring-brand-600/10"
+            [class]="h.coverageState === 'FAILED' ? 'bg-red-500' : h.coverageState === 'PARTIAL' ? 'bg-amber-500' : 'bg-emerald-500'"
+            aria-hidden="true"
+          ></span>
+
+          <div class="rounded-2xl border border-border bg-surface p-5">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p class="font-semibold text-fg">{{ h.geography ?? h.city ?? '—' }}</p>
+                <p class="text-xs text-zinc-500">{{ h.searchType }} · {{ h.searchedAt | date: 'EEEE d MMM y, HH:mm' }}</p>
+              </div>
+              <span [class]="coverageBadgeClass(h.coverageState)">{{ h.coverageState ?? 'UNKNOWN' }}</span>
+            </div>
+
+            <div class="mt-4 grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
+              <div>
+                <p class="text-zinc-500">Companies found</p>
+                <p class="font-medium text-zinc-300">{{ h.companiesFound }}</p>
+              </div>
+              <div>
+                <p class="text-zinc-500">New companies</p>
+                <p class="font-medium text-zinc-300">{{ h.newCompanies }}</p>
+              </div>
+              <div>
+                <p class="text-zinc-500">Duplicates</p>
+                <p class="font-medium text-zinc-300">{{ h.duplicatesFound }}</p>
+              </div>
+              <div>
+                <p class="text-zinc-500">Jobs found</p>
+                <p class="font-medium text-zinc-300">{{ h.jobsFound }}</p>
+              </div>
+              <div>
+                <p class="text-zinc-500">New jobs</p>
+                <p class="font-medium text-zinc-300">{{ h.newJobs }}</p>
+              </div>
+            </div>
+
+            @if (h.sourcesChecked.length > 0) {
+              <div class="mt-3 flex flex-wrap gap-1.5">
+                @for (s of h.sourcesChecked; track s) {
+                  <span class="inline-flex items-center rounded-full bg-zinc-500/10 px-2 py-0.5 text-[11px] font-medium uppercase text-zinc-400">{{ s }}</span>
+                }
+              </div>
+            }
+            @if (h.queriesUsed.length > 0) {
+              <p class="mt-2 text-xs text-zinc-500">
+                Queries: <span class="text-zinc-400">{{ h.queriesUsed.join(' · ') }}</span>
+              </p>
+            }
+            @if (h.notes) {
+              <p class="mt-2 text-xs text-red-400 whitespace-pre-line">{{ h.notes }}</p>
+            }
+          </div>
+        </li>
+      }
+    </ol>
   }
 </div>

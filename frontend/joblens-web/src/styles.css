@@ -1,11 +1,41 @@
 @import "tailwindcss";
 
-html, body {
+/*
+  Design tokens — single source of truth for the dashboard's palette.
+  Premium dark SaaS / AI product: deep black/charcoal foundation, orange
+  reserved strictly as an accent (primary actions, active nav/tab, key
+  metrics, links, focus states) — never the dominant color.
+  Real statuses (success/warning/error) keep their own semantic colors
+  (see shared/badge-styles.ts) and are never replaced by orange.
+*/
+@theme {
+  --color-canvas: #09090b; /* page background */
+  --color-ink: #050505; /* sidebar background — slightly deeper than canvas */
+  --color-surface: #111113; /* card / panel background */
+  --color-surface-hover: #18181b;
+  --color-border: #27272a;
+
+  --color-fg: #f5f5f5; /* primary text on dark surfaces */
+  --color-fg-muted: #a1a1aa; /* secondary text */
+
+  --color-brand-300: #ffab85;
+  --color-brand-400: #ff8a5c;
+  --color-brand-500: #ff7a3d;
+  --color-brand-600: #ff6b2c;
+  --color-brand-700: #e2571c;
+}
+
+html,
+body {
   height: 100%;
 }
 
 body {
   margin: 0;
-  background-color: #f8fafc;
-  color: #0f172a;
+  background-color: var(--color-canvas);
+  color: var(--color-fg);
+}
+
+::selection {
+  background-color: color-mix(in srgb, var(--color-brand-600) 35%, transparent);
 }

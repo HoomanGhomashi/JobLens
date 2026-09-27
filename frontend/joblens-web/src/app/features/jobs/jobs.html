@@ -1,103 +1,145 @@
 <div class="max-w-6xl mx-auto space-y-6">
-  <div>
-    <h1 class="text-2xl font-semibold text-slate-900">Jobs</h1>
-    <p class="mt-1 text-sm text-slate-500">research.Jobs — offres découvertes et leur statut d'opportunité active.</p>
-  </div>
+  <app-page-header title="Jobs" description="research.Jobs — offres découvertes et leur statut d'opportunité active." [showRefresh]="true" (refresh)="refresh()" />
+
+  @if (!loading() && !error()) {
+    <div class="flex flex-wrap items-center gap-3">
+      <div class="relative max-w-sm flex-1 min-w-[220px]">
+        <svg class="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
+        </svg>
+        <input
+          type="search"
+          [ngModel]="search()"
+          (ngModelChange)="onSearchChange($event)"
+          placeholder="Rechercher par titre, entreprise, ville…"
+          aria-label="Rechercher une offre"
+          class="w-full rounded-lg border border-border bg-surface py-2 pl-9 pr-3 text-sm text-fg placeholder:text-zinc-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+        />
+      </div>
+
+      <select
+        [ngModel]="contractFilter()"
+        (ngModelChange)="onContractChange($event)"
+        aria-label="Filtrer par type de contrat"
+        class="rounded-lg border border-border bg-surface py-2 pl-3 pr-8 text-sm text-fg focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+      >
+        @for (c of contractOptions(); track c) {
+          <option [value]="c">{{ c === 'all' ? 'Tous les contrats' : c }}</option>
+        }
+      </select>
+
+      <div class="inline-flex rounded-lg border border-border bg-surface p-0.5 text-sm">
+        @for (opt of activeFilterOptions; track opt.value) {
+          <button
+            type="button"
+            (click)="onActiveFilterChange(opt.value)"
+            [class]="activeFilter() === opt.value ? 'bg-brand-600 text-white' : 'text-fg-muted hover:bg-surface-hover hover:text-fg'"
+            class="rounded-md px-3 py-1.5 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+          >
+            {{ opt.label }}
+          </button>
+        }
+      </div>
+    </div>
+  }
 
   @if (loading()) {
-    <div class="animate-pulse h-64 rounded-xl bg-slate-200"></div>
-  } @else if (error()) {
-    <div class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">{{ error() }}</div>
-  } @else if (result(); as r) {
-    <div class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-      @if (r.items.length === 0) {
-        <p class="px-5 py-10 text-center text-sm text-slate-400">Aucune offre en base.</p>
-      } @else {
-        <ul class="divide-y divide-slate-100">
-          @for (job of r.items; track job.id) {
-            <li>
-              <button
-                type="button"
-                class="w-full text-left px-5 py-4 hover:bg-slate-50 flex flex-wrap items-start justify-between gap-3"
-                (click)="toggleExpand(job.id)"
-              >
-                <div>
-                  <p class="font-medium text-slate-900">{{ job.title }}</p>
-                  <p class="text-sm text-slate-500">
-                    {{ job.city ?? '—' }} · {{ job.country }}
-                    @if (job.publishedAt) {
-                      · publié le {{ job.publishedAt | date: 'dd/MM/yyyy' }}
-                    } @else if (job.publishedAtRaw) {
-                      · {{ job.publishedAtRaw }}
-                    }
-                  </p>
-                </div>
-                <div class="flex items-center gap-2 shrink-0">
-                  @if (job.contractType) {
-                    <span [class]="contractBadgeClass(job.contractType)">{{ job.contractType }}</span>
-                  }
-                  <span [class]="activeOpportunityBadgeClass(job.isActiveOpportunity)">
-                    {{ job.isActiveOpportunity ? 'Active opportunity' : 'Inactive' }}
-                  </span>
-                </div>
-              </button>
-
-              @if (expandedId() === job.id) {
-                <div class="px-5 pb-5 space-y-3 text-sm text-slate-600 bg-slate-50">
-                  @if (job.description) {
-                    <p class="whitespace-pre-line">{{ job.description }}</p>
-                  }
-                  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                    <div>
-                      <p class="text-slate-400">Expérience</p>
-                      <p class="text-slate-700">
-                        @if (job.experienceMinYears || job.experienceMaxYears) {
-                          {{ job.experienceMinYears ?? '?' }}–{{ job.experienceMaxYears ?? '?' }} ans
-                        } @else {
-                          {{ job.experienceRaw ?? 'Non précisé' }}
-                        }
-                      </p>
-                    </div>
-                    <div>
-                      <p class="text-slate-400">Statut plateforme</p>
-                      <p class="text-slate-700">{{ job.status }}</p>
-                    </div>
-                    <div>
-                      <p class="text-slate-400">Découverte le</p>
-                      <p class="text-slate-700">{{ job.firstDiscoveredAt | date: 'short' }}</p>
-                    </div>
-                    <div>
-                      <p class="text-slate-400">Vue pour la dernière fois</p>
-                      <p class="text-slate-700">{{ job.lastSeenAt ? (job.lastSeenAt | date: 'short') : '—' }}</p>
-                    </div>
-                  </div>
-                  @if (job.sources.length > 0) {
-                    <div>
-                      <p class="text-slate-400 text-xs mb-1">Sources</p>
-                      <ul class="space-y-1">
-                        @for (s of job.sources; track s.id) {
-                          <li>
-                            @if (s.sourceUrl) {
-                              <a [href]="s.sourceUrl" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:underline break-all">
-                                {{ s.source }} — {{ s.sourceUrl }}
-                              </a>
-                            } @else {
-                              <span>{{ s.source }} — URL indisponible</span>
-                            }
-                          </li>
-                        }
-                      </ul>
-                    </div>
-                  }
-                </div>
-              }
-            </li>
-          }
-        </ul>
+    <div class="animate-pulse space-y-3">
+      @for (i of [1, 2, 3, 4]; track i) {
+        <div class="h-20 rounded-2xl bg-surface"></div>
       }
     </div>
-    <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
-      <app-pager [page]="r.page" [pageSize]="r.pageSize" [totalCount]="r.totalCount" (pageChange)="onPageChange($event)" />
+  } @else if (error()) {
+    <app-empty-error-state kind="error" title="Chargement impossible" [description]="error()!" />
+  } @else if (filtered().length === 0) {
+    <app-empty-error-state title="Aucune offre ne correspond" description="Essayez un autre terme ou réinitialisez les filtres." />
+  } @else {
+    <div class="rounded-2xl border border-border bg-surface overflow-hidden">
+      <ul class="divide-y divide-border">
+        @for (job of pageItems(); track job.id) {
+          <li>
+            <button
+              type="button"
+              class="w-full text-left px-5 py-4 hover:bg-surface-hover transition-colors flex flex-wrap items-start justify-between gap-3"
+              [attr.aria-expanded]="expandedId() === job.id"
+              (click)="toggleExpand(job.id)"
+            >
+              <div class="flex items-start gap-3">
+                <span
+                  class="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full"
+                  [class]="job.isActiveOpportunity ? 'bg-brand-500' : 'bg-zinc-600'"
+                  aria-hidden="true"
+                ></span>
+                <div>
+                  <p class="font-medium text-fg">{{ job.title }}</p>
+                  <p class="text-sm text-fg-muted">
+                    {{ job.companyName ?? 'Entreprise inconnue' }} · {{ job.city ?? '—' }}, {{ job.country }}
+                  </p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                @if (job.contractType) {
+                  <span [class]="contractBadgeClass(job.contractType)">{{ job.contractType }}</span>
+                }
+                <span [class]="activeOpportunityBadgeClass(job.isActiveOpportunity)">
+                  {{ job.isActiveOpportunity ? 'Active opportunity' : 'Inactive' }}
+                </span>
+              </div>
+            </button>
+
+            @if (expandedId() === job.id) {
+              <div class="px-5 pb-5 space-y-3 text-sm text-zinc-300 bg-black/20">
+                @if (job.description) {
+                  <p class="leading-relaxed whitespace-pre-line">{{ job.description }}</p>
+                }
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                  <div>
+                    <p class="text-zinc-500">Expérience</p>
+                    <p class="text-zinc-300">
+                      @if (job.experienceMinYears || job.experienceMaxYears) {
+                        {{ job.experienceMinYears ?? '?' }}–{{ job.experienceMaxYears ?? '?' }} ans
+                      } @else {
+                        {{ job.experienceRaw ?? 'Non précisé' }}
+                      }
+                    </p>
+                  </div>
+                  <div>
+                    <p class="text-zinc-500">Statut plateforme</p>
+                    <p class="text-zinc-300">{{ job.status }}</p>
+                  </div>
+                  <div>
+                    <p class="text-zinc-500">Découverte le</p>
+                    <p class="text-zinc-300">{{ job.firstDiscoveredAt | date: 'short' }}</p>
+                  </div>
+                  <div>
+                    <p class="text-zinc-500">Vue pour la dernière fois</p>
+                    <p class="text-zinc-300">{{ job.lastSeenAt ? (job.lastSeenAt | date: 'short') : '—' }}</p>
+                  </div>
+                </div>
+                @if (job.sources.length > 0) {
+                  <div>
+                    <p class="text-zinc-500 text-xs mb-1">Sources</p>
+                    <ul class="space-y-1">
+                      @for (s of job.sources; track s.id) {
+                        <li>
+                          @if (s.sourceUrl) {
+                            <a [href]="s.sourceUrl" target="_blank" rel="noopener noreferrer" class="text-brand-400 hover:text-brand-300 hover:underline break-all">
+                              {{ s.source }} — {{ s.sourceUrl }}
+                            </a>
+                          } @else {
+                            <span>{{ s.source }} — URL indisponible</span>
+                          }
+                        </li>
+                      }
+                    </ul>
+                  </div>
+                }
+              </div>
+            }
+          </li>
+        }
+      </ul>
+      <app-pager [page]="page()" [pageSize]="pageSize" [totalCount]="filtered().length" (pageChange)="onPageChange($event)" />
     </div>
   }
 </div>

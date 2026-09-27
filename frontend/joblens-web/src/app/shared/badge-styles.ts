@@ -1,12 +1,17 @@
-const BASE = 'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium';
+const BASE = 'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset';
 
+// Translucent tint over a dark surface — standard pattern for badges in a
+// dark UI (solid light-mode pills like bg-emerald-100 would look out of
+// place on a near-black background).
 const TONE = {
-  green: `${BASE} bg-emerald-100 text-emerald-700`,
-  blue: `${BASE} bg-blue-100 text-blue-700`,
-  amber: `${BASE} bg-amber-100 text-amber-700`,
-  red: `${BASE} bg-red-100 text-red-700`,
-  slate: `${BASE} bg-slate-100 text-slate-600`,
-  indigo: `${BASE} bg-indigo-100 text-indigo-700`,
+  green: `${BASE} bg-emerald-500/10 text-emerald-400 ring-emerald-500/20`,
+  blue: `${BASE} bg-sky-500/10 text-sky-400 ring-sky-500/20`,
+  amber: `${BASE} bg-amber-500/10 text-amber-400 ring-amber-500/20`,
+  red: `${BASE} bg-red-500/10 text-red-400 ring-red-500/20`,
+  zinc: `${BASE} bg-zinc-500/10 text-zinc-400 ring-zinc-500/20`,
+  // Reserved for genuine "active opportunity" / "actively relevant" signals —
+  // the one badge tone allowed to use the brand accent, per design direction.
+  brand: `${BASE} bg-brand-600/10 text-brand-400 ring-brand-600/25`,
 };
 
 export function contractBadgeClass(contractType: string | null): string {
@@ -18,15 +23,13 @@ export function contractBadgeClass(contractType: string | null): string {
     case 'Stage':
     case 'Alternance':
       return TONE.amber;
-    case 'Freelance':
-      return TONE.indigo;
     default:
-      return TONE.slate;
+      return TONE.zinc;
   }
 }
 
 export function activeOpportunityBadgeClass(isActive: boolean): string {
-  return isActive ? TONE.green : TONE.slate;
+  return isActive ? TONE.brand : TONE.zinc;
 }
 
 export function hiringSignalBadgeClass(signal: string): string {
@@ -38,14 +41,14 @@ export function hiringSignalBadgeClass(signal: string): string {
     case 'LOW':
       return TONE.red;
     default:
-      return TONE.slate;
+      return TONE.zinc;
   }
 }
 
 export function companyStatusBadgeClass(status: string): string {
   switch (status) {
     case 'ACTIVE_RELEVANT':
-      return TONE.green;
+      return TONE.brand;
     case 'MONITOR':
     case 'POTENTIALLY_RELEVANT':
       return TONE.blue;
@@ -54,7 +57,7 @@ export function companyStatusBadgeClass(status: string): string {
     case 'NOT_RELEVANT':
       return TONE.red;
     default:
-      return TONE.slate;
+      return TONE.zinc;
   }
 }
 
@@ -67,7 +70,7 @@ export function coverageBadgeClass(state: string | null): string {
     case 'FAILED':
       return TONE.red;
     default:
-      return TONE.slate;
+      return TONE.zinc;
   }
 }
 

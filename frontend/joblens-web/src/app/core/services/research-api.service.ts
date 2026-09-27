@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
+import { environment } from '../../../environments/environment';
 import {
   CompanyDto,
   JobDto,
@@ -10,42 +11,49 @@ import {
   SearchHistoryDto,
 } from '../models/research.models';
 
-// Local development only — matches backend/JobLens.API's http launch profile.
-const API_BASE = 'http://localhost:5020/api/research';
+// Matches the API's MaxPageSize (ResearchController) — large enough to fetch
+// every row in one call for a dashboard of this size, avoiding server-side
+// search/filter params entirely: search/filter/pagination happen client-side.
+const FETCH_ALL_PAGE_SIZE = 100;
 
+/**
+ * Local Mode data source — talks to the real ASP.NET Core API, backed by SQL Server.
+ */
 @Injectable({ providedIn: 'root' })
 export class ResearchApiService {
+  private readonly apiBase = environment.apiBaseUrl;
+
   constructor(private readonly http: HttpClient) {}
 
   getOverview(): Observable<OverviewDto> {
-    return this.http.get<OverviewDto>(`${API_BASE}/overview`);
+    return this.http.get<OverviewDto>(`${this.apiBase}/overview`);
   }
 
-  getCompanies(page: number, pageSize: number): Observable<PagedResult<CompanyDto>> {
-    return this.http.get<PagedResult<CompanyDto>>(`${API_BASE}/companies`, {
-      params: this.pagingParams(page, pageSize),
-    });
+  getCompanies(): Observable<CompanyDto[]> {
+    return this.http
+      .get<PagedResult<CompanyDto>>(`${this.apiBase}/companies`, { params: this.fetchAllParams() })
+      .pipe(map((r) => r.items));
   }
 
-  getJobs(page: number, pageSize: number): Observable<PagedResult<JobDto>> {
-    return this.http.get<PagedResult<JobDto>>(`${API_BASE}/jobs`, {
-      params: this.pagingParams(page, pageSize),
-    });
+  getJobs(): Observable<JobDto[]> {
+    return this.http
+      .get<PagedResult<JobDto>>(`${this.apiBase}/jobs`, { params: this.fetchAllParams() })
+      .pipe(map((r) => r.items));
   }
 
-  getJobSources(page: number, pageSize: number): Observable<PagedResult<JobSourceDto>> {
-    return this.http.get<PagedResult<JobSourceDto>>(`${API_BASE}/job-sources`, {
-      params: this.pagingParams(page, pageSize),
-    });
+  getJobSources(): Observable<JobSourceDto[]> {
+    return this.http
+      .get<PagedResult<JobSourceDto>>(`${this.apiBase}/job-sources`, { params: this.fetchAllParams() })
+      .pipe(map((r) => r.items));
   }
 
-  getSearchHistory(page: number, pageSize: number): Observable<PagedResult<SearchHistoryDto>> {
-    return this.http.get<PagedResult<SearchHistoryDto>>(`${API_BASE}/search-history`, {
-      params: this.pagingParams(page, pageSize),
-    });
+  getSearchHistory(): Observable<SearchHistoryDto[]> {
+    return this.http
+      .get<PagedResult<SearchHistoryDto>>(`${this.apiBase}/search-history`, { params: this.fetchAllParams() })
+      .pipe(map((r) => r.items));
   }
 
-  private pagingParams(page: number, pageSize: number): HttpParams {
-    return new HttpParams().set('page', page).set('pageSize', pageSize);
+  private fetchAllParams(): HttpParams {
+    return new HttpParams().set('page', 1).set('pageSize', FETCH_ALL_PAGE_SIZE);
   }
 }
