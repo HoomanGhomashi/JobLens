@@ -1,35 +1,49 @@
 # JobLens
 
-**AI-Powered Job Application Tracker** — keep every application, interview, and follow-up in one place, and let AI help you tailor, summarize, and analyze your job search.
+**AI-powered Job Research & Intelligence Platform** — an autonomous pipeline that discovers companies and job openings, verifies them with an LLM, and surfaces active opportunities on a dashboard.
 
 ---
 
-## What it does
+## Architecture
 
-JobLens helps job seekers manage their pipeline end to end:
+**Research Engine** (Python)
+- [Apify](https://apify.com) — web discovery and page fetching
+- [Claude / Anthropic](https://www.anthropic.com) — structured extraction and verification of companies and job postings
+- SQL Server — persistence (`research.Companies`, `research.Jobs`, `research.JobSources`, `research.SearchHistory`)
 
-- Track applications through stages (Saved → Applied → Interview → Offer → Rejected)
-- Store job descriptions, contacts, notes, and important dates
-- AI assistance (Google Gemini): summarize job postings, extract key requirements,
-  match them against your profile, and draft tailored cover letters
-- Personal dashboard with status breakdown and activity over time
-- Secure multi-user access with JWT authentication
+**Application**
+- ASP.NET Core Web API (.NET 8) — read-only REST layer over the research data
+- Angular 21 + TypeScript + Tailwind CSS — dashboard frontend
 
-> Status: **Phase 0 — project scaffolding.** Features above are the product goal;
-> see the roadmap for what is actually built.
+**Dashboard tabs**
+- Overview, Companies, Jobs, Job Sources, Search History
+
+The dashboard runs in one of two modes, chosen at build time:
+
+```text
+Local Mode
+Research Engine → SQL Server → ASP.NET Core API → Angular Dashboard
+```
+
+```text
+Demo Mode
+Synthetic Demo Dataset → Angular Dashboard
+```
+
+**Local Mode** reads real data produced by the research engine, through the API, from your own SQL Server instance.
+
+**Demo Mode** is a self-contained build for portfolio/demo purposes: it reads a static, synthetic dataset bundled with the app and needs **no backend and no SQL Server** to run. The demo dataset is fabricated for demonstration only and does **not** represent live job listings — nothing in it should be treated as a real, current opportunity.
 
 ---
 
 ## Tech stack
 
-| Layer      | Technology                                   |
-| ---------- | -------------------------------------------- |
-| Backend    | ASP.NET Core Web API (.NET 8)                |
-| Frontend   | Angular 21 + TypeScript                      |
-| Styling    | Tailwind CSS                                 |
-| Database   | SQL Server (EF Core)                         |
-| AI         | Google Gemini API                           |
-| Auth       | JWT (bearer tokens)                          |
+| Layer           | Technology                              |
+| ---------------- | ---------------------------------------- |
+| Research Engine  | Python, Apify, Claude (Anthropic API)    |
+| Backend API      | ASP.NET Core Web API (.NET 8), EF Core   |
+| Frontend         | Angular 21, TypeScript, Tailwind CSS     |
+| Database         | SQL Server                               |
 
 ---
 
@@ -37,13 +51,11 @@ JobLens helps job seekers manage their pipeline end to end:
 
 ```
 JobLens/
+├── research-engine/        Python research pipeline (Apify + Claude → SQL Server)
 ├── backend/
-│   └── JobLens.API/        ASP.NET Core Web API
+│   └── JobLens.API/        ASP.NET Core Web API (read-only research data endpoints)
 ├── frontend/
-│   └── joblens-web/        Angular 21 application
-├── .editorconfig
-├── .gitattributes
-├── .gitignore
+│   └── joblens-web/        Angular dashboard (Local Mode + Demo Mode)
 └── README.md
 ```
 
@@ -51,26 +63,16 @@ JobLens/
 
 ## Getting started
 
-### Prerequisites
+### Local Mode (real data)
 
-- .NET 8 SDK
-- Node.js 20+ and npm
-- SQL Server (LocalDB, Express, or full)
-- A Google Gemini API key
-
-### Backend
+Requires .NET 8 SDK, Node.js 20+, and a SQL Server instance with the research engine's schema already applied.
 
 ```bash
 cd backend/JobLens.API
 cp appsettings.Development.json.example appsettings.Development.json
-# edit appsettings.Development.json: connection string, JWT key, Gemini API key
-dotnet restore
+# edit appsettings.Development.json with your SQL Server connection string
 dotnet run
 ```
-
-API runs at `https://localhost:5001` (see `Properties/launchSettings.json`).
-
-### Frontend
 
 ```bash
 cd frontend/joblens-web
@@ -78,30 +80,27 @@ npm install
 npm start
 ```
 
-App runs at `http://localhost:4200`.
+Dashboard: `http://localhost:4200` · API: `http://localhost:5020`
+
+### Demo Mode (no backend needed)
+
+```bash
+cd frontend/joblens-web
+npm install
+npx ng serve --configuration demo
+```
+
+Serves the dashboard against the bundled synthetic dataset only — no API, no database.
 
 ---
 
 ## Configuration
 
-Secrets are **not** committed. The backend reads configuration from
-`appsettings.Development.json` (git-ignored). Use
-`appsettings.Development.json.example` as a template:
+Secrets are **not** committed. The backend reads its connection string from `appsettings.Development.json` (git-ignored); use `appsettings.Development.json.example` as a template:
 
 - `ConnectionStrings:DefaultConnection` — SQL Server connection string
-- `Jwt:Key` / `Jwt:Issuer` / `Jwt:Audience` — JWT signing settings
-- `Gemini:ApiKey` — Google Gemini API key
 
----
-
-## Roadmap
-
-- [x] **Phase 0** — Repository setup, backend & frontend scaffolding
-- [ ] **Phase 1** — Data model, EF Core migrations, applications CRUD
-- [ ] **Phase 2** — JWT authentication and user accounts
-- [ ] **Phase 3** — Angular UI: list, board, and detail views with Tailwind
-- [ ] **Phase 4** — Gemini integration: posting summaries and cover-letter drafts
-- [ ] **Phase 5** — Dashboard and analytics
+The research engine's own credentials (Anthropic API key, Apify token, database connection) live in `research-engine/.env` (git-ignored) — see `research-engine/.env.example`.
 
 ---
 
