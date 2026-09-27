@@ -1,0 +1,59 @@
+<div class="max-w-6xl mx-auto space-y-6">
+  <div>
+    <h1 class="text-2xl font-semibold text-slate-900">Job Sources</h1>
+    <p class="mt-1 text-sm text-slate-500">research.JobSources — URLs vérifiées par Claude pour chaque offre.</p>
+  </div>
+
+  @if (loading()) {
+    <div class="animate-pulse h-64 rounded-xl bg-slate-200"></div>
+  } @else if (error()) {
+    <div class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">{{ error() }}</div>
+  } @else if (result(); as r) {
+    <div class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+      @if (r.items.length === 0) {
+        <p class="px-5 py-10 text-center text-sm text-slate-400">Aucune source en base.</p>
+      } @else {
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-slate-200 text-sm">
+            <thead class="bg-slate-50">
+              <tr class="text-left text-xs font-medium uppercase tracking-wide text-slate-500">
+                <th class="px-5 py-3">Job</th>
+                <th class="px-5 py-3">Source</th>
+                <th class="px-5 py-3">URL</th>
+                <th class="px-5 py-3">Verified</th>
+                <th class="px-5 py-3">Reliable</th>
+                <th class="px-5 py-3">Discovered</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              @for (s of r.items; track s.id) {
+                <tr class="hover:bg-slate-50">
+                  <td class="px-5 py-3 font-medium text-slate-900">{{ s.jobTitle ?? '—' }}</td>
+                  <td class="px-5 py-3 text-slate-600 uppercase text-xs">{{ s.source }}</td>
+                  <td class="px-5 py-3 max-w-xs">
+                    @if (s.sourceUrl) {
+                      <a
+                        [href]="s.sourceUrl"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="text-indigo-600 hover:underline break-all"
+                      >
+                        {{ s.sourceUrl }}
+                      </a>
+                    } @else {
+                      <span class="text-slate-400">—</span>
+                    }
+                  </td>
+                  <td class="px-5 py-3"><span [class]="urlFlagBadgeClass(s.urlVerified)">{{ s.urlVerified ? 'Yes' : 'No' }}</span></td>
+                  <td class="px-5 py-3"><span [class]="urlFlagBadgeClass(s.urlReliable)">{{ s.urlReliable ? 'Yes' : 'No' }}</span></td>
+                  <td class="px-5 py-3 text-slate-500">{{ s.discoveredAt | date: 'short' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <app-pager [page]="r.page" [pageSize]="r.pageSize" [totalCount]="r.totalCount" (pageChange)="onPageChange($event)" />
+      }
+    </div>
+  }
+</div>

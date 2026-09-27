@@ -1,0 +1,72 @@
+<div class="max-w-6xl mx-auto space-y-6">
+  <div>
+    <h1 class="text-2xl font-semibold text-slate-900">Search History</h1>
+    <p class="mt-1 text-sm text-slate-500">research.SearchHistory — journal des runs du research engine.</p>
+  </div>
+
+  @if (loading()) {
+    <div class="animate-pulse h-64 rounded-xl bg-slate-200"></div>
+  } @else if (error()) {
+    <div class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">{{ error() }}</div>
+  } @else if (result(); as r) {
+    <div class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+      @if (r.items.length === 0) {
+        <p class="px-5 py-10 text-center text-sm text-slate-400">Aucun run enregistré.</p>
+      } @else {
+        <ul class="divide-y divide-slate-100">
+          @for (h of r.items; track h.id) {
+            <li class="px-5 py-4">
+              <div class="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <p class="font-medium text-slate-900">{{ h.geography ?? h.city ?? '—' }} · {{ h.searchType }}</p>
+                  <p class="text-sm text-slate-500">{{ h.searchedAt | date: 'medium' }}</p>
+                </div>
+                <span [class]="coverageBadgeClass(h.coverageState)">{{ h.coverageState ?? 'UNKNOWN' }}</span>
+              </div>
+
+              <div class="mt-3 grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
+                <div>
+                  <p class="text-slate-400">Companies found</p>
+                  <p class="text-slate-700">{{ h.companiesFound }}</p>
+                </div>
+                <div>
+                  <p class="text-slate-400">New companies</p>
+                  <p class="text-slate-700">{{ h.newCompanies }}</p>
+                </div>
+                <div>
+                  <p class="text-slate-400">Duplicates</p>
+                  <p class="text-slate-700">{{ h.duplicatesFound }}</p>
+                </div>
+                <div>
+                  <p class="text-slate-400">Jobs found</p>
+                  <p class="text-slate-700">{{ h.jobsFound }}</p>
+                </div>
+                <div>
+                  <p class="text-slate-400">New jobs</p>
+                  <p class="text-slate-700">{{ h.newJobs }}</p>
+                </div>
+              </div>
+
+              @if (h.sourcesChecked.length > 0) {
+                <p class="mt-3 text-xs text-slate-400">
+                  Sources : <span class="text-slate-600">{{ h.sourcesChecked.join(', ') }}</span>
+                </p>
+              }
+              @if (h.queriesUsed.length > 0) {
+                <p class="mt-1 text-xs text-slate-400">
+                  Queries : <span class="text-slate-600">{{ h.queriesUsed.join(' · ') }}</span>
+                </p>
+              }
+              @if (h.notes) {
+                <p class="mt-2 text-xs text-red-500 whitespace-pre-line">{{ h.notes }}</p>
+              }
+            </li>
+          }
+        </ul>
+      }
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+      <app-pager [page]="r.page" [pageSize]="r.pageSize" [totalCount]="r.totalCount" (pageChange)="onPageChange($event)" />
+    </div>
+  }
+</div>
