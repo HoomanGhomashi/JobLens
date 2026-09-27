@@ -88,7 +88,7 @@ export class Overview implements OnInit {
         this.error.set(
           this.api.isDemo
             ? 'Impossible de charger le dataset de démonstration.'
-            : "Impossible de charger les données de l'API. Vérifiez que le backend (http://localhost:5020) est démarré.",
+            : "Impossible de charger les données de l'API. Vérifiez que le backend local est démarré.",
         );
         this.loading.set(false);
       },

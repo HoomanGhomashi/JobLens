@@ -1,0 +1,7 @@
+{
+  "buildCommand": "npx ng build --configuration demo",
+  "outputDirectory": "dist/joblens-web/browser",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
